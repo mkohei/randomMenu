@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <!-- format メソット実装 -->
+    <script type="text/javascript" src="format.js"></script>
+
+    <title>Document</title>
+</head>
+
+<body>
+    <!-- list 作成 from JSON -->
+    <script>
+        $(function() {
+            $.getJSON("menu.json", function(json) {
+                document.write("<button id='get'>GET</button>");
+
+                a = document.getElementById("get");
+                console.log(a);
+                document.getElementById("get").onclick = (function(json) {
+                    return function() {
+                        var randomlist = [];
+
+                        var i1 = 0;
+                        for (var key1 in json) {
+                            a = document.getElementById("check{0}".format(i1))
+
+                            var i2 = 0;
+                            for (var key2 in json[key1]) {
+                                b = document.getElementById("check{0}-{1}".format(i1, i2));
+
+                                console.log(a.checked);
+                                console.log(b.checked);
+
+                                if (a.checked || b.checked) {
+                                    console.log("a or b");
+
+                                    for (var key3 in json[key1][key2]) {
+                                        menu = json[key1][key2][key3];
+                                        randomlist.push(menu);
+                                    }
+                                }
+
+                                i2++;
+                            }
+                            i1++;
+                        }
+                        console.log(randomlist);
+                        var content = "";
+                        if (randomlist.length == 0) {
+                            content = "unchecked";
+                        } else {
+                            index = Math.floor(Math.random() * randomlist.length);
+                            console.log(index, randomlist[index]);
+                            var content = "";
+                            for (var key in randomlist[index]) {
+                                content += "{0} : {1}<br>".format(key, randomlist[index][key]);
+                            }
+                        }
+                        document.getElementById("content").innerHTML = content;
+                    }
+                })(json);
+
+
+                document.write("<div id='content'></div>");
+
+                document.write("<hr>");
+                console.log(json);
+
+                // generate check list
+                document.write("<ul style='list-style:none; padding-left:0;'>");
+                var i1 = 0;
+                for (var key1 in json) {
+                    document.write("<li>");
+
+                    document.write("<label for='check{0}'>".format(i1));
+                    document.write("<input type='checkbox' id='check{0}' checked='checked'>{1}".format(i1, key1));
+                    document.write("</label>");
+                    document.write("<button id='btn{0}' onclick='onclick_extend_X({1});'>+</button>".format(i1, i1));
+
+                    document.write("<ul style='list-style:none; display:none;' id='list{0}'>".format(i1));
+                    list2 = json[key1];
+                    var i2 = 0;
+                    for (var key2 in list2) {
+                        document.write("<li>");
+
+                        document.write("<label for='check{0}-{1}'>".format(i1, i2));
+                        document.write("<input type='checkbox' id='check{0}-{1}'>{2}".format(i1, i2, key2));
+                        document.write("</label>");
+                        document.write("<button id='btn{0}-{1}' onclick='onclick_extend_XX({2}, {3});'>+</button>".format(i1, i2, i1, i2));
+
+                        document.write("<ul style='list-type:none; display:none'; id='list{0}-{1}'>".format(i1, i2));
+                        list3 = list2[key2];
+                        var i3 = 0;
+                        for (var key3 in list3) {
+                            document.write("<li>");
+                            list4 = list3[key3];
+                            for (var key4 in list4) {
+                                document.write(key4 + " : " + list4[key4] + "<br>");
+                            }
+                            document.write("</li>");
+                            i3++;
+                        }
+                        document.write("</ul>");
+
+                        document.write("</li>");
+                        i2++;
+                    }
+                    document.write("</ul>");
+
+                    document.write("</li>");
+
+                    i1++;
+                }
+                document.write("</ul>");
+            });
+        });
+    </script>
+
+    <script>
+        function onclick_extend_X(i1) {
+            disp = document.getElementById("list{0}".format(i1)).style.display;
+            console.log(disp);
+
+            if (disp == "none") {
+                document.getElementById("list{0}".format(i1)).style.display = "block";
+                document.getElementById("btn{0}".format(i1)).innerHTML = "-";
+            } else if (disp == "block") {
+                document.getElementById("list{0}".format(i1)).style.display = "none";
+                document.getElementById("btn{0}".format(i1)).innerHTML = "+";
+            }
+        }
+
+        function onclick_extend_XX(i1, i2) {
+            disp = document.getElementById("list{0}-{1}".format(i1, i2)).style.display;
+            console.log(disp);
+
+
+            if (disp == "none") {
+                document.getElementById("list{0}-{1}".format(i1, i2)).style.display = "block";
+                document.getElementById("btn{0}-{1}".format(i1, i2)).innerHTML = "-";
+            } else if (disp == "block") {
+                document.getElementById("list{0}-{1}".format(i1, i2)).style.display = "none";
+                document.getElementById("btn{0}-{1}".format(i1, i2)).innerHTML = "+";
+            }
+        }
+
+
+        function onclick_get(json) {
+            var i1 = 0;
+            for (var key1 in json) {
+                console.log(key1, i1);
+
+                a = document.getElementById("check{0}".format(i1))
+                console.log(a);
+
+                var i2 = 0;
+                for (var key2 in json[key1]) {
+
+                    i2++;
+                }
+                i1++;
+            }
+        }
+    </script>
+</body>
+
+</html>;
