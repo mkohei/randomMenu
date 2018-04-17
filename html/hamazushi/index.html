@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <!-- format メソット実装 -->
+    <script type="text/javascript" src="format.js"></script>
+</head>
+
+<body>
+    <script>
+        $(function() {
+            $.getJSON("menu.json", function(json) {
+                document.write("<button id='get'>GET</button>");
+
+                a = document.getElementById("get");
+                console.log(a);
+                document.getElementById("get").onclick = (function(json) {
+                    return function() {
+                        var randomlist = [];
+
+                        var i1 = 0;
+                        for (var key1 in json) {
+                            a = document.getElementById("check{0}".format(i1))
+
+                            console.log(a.checked);
+
+                            if (a.checked == true) {
+                                for (var key2 in json[key1]) {
+                                    randomlist.push(json[key1][key2]);
+                                }
+                            }
+                            i1++;
+                        }
+                        console.log(randomlist);
+                        var content = "";
+                        if (randomlist.length == 0) {
+                            content = "unchecked";
+                        } else {
+                            index = Math.floor(Math.random() * randomlist.length);
+                            console.log(index, randomlist[index]);
+                            content = randomlist[index];
+                        }
+                        document.getElementById("content").innerHTML = content;
+                    }
+                })(json);
+
+
+                document.write("<div id='content'></div>");
+
+                document.write("<hr>");
+
+                // genereate check list
+                document.write("<ul style='list-style:none; padding-left:0;'>");
+                var i1 = 0;
+                for (var key1 in json) {
+                    document.write("<li>");
+
+                    document.write("<label for='check{0}'>".format(i1));
+                    document.write("<input type='checkbox' id='check{0}' checked='checked'>{1}".format(i1, key1));
+                    document.write("</label>");
+                    document.write("<button id='btn{0}' onclick='onclick_extend_X({1});'>+</button>".format(i1, i1));
+
+                    document.write("<ul style='list-type:none; display:none'; id='list{0}'>".format(i1));
+                    for (var key2 in json[key1]) {
+                        document.write("<li>{0}</li>".format(json[key1][key2]));
+                    }
+                    document.write("</ul>")
+                    i1++;
+                }
+                document.write("</ul>")
+            });
+        });
+    </script>
+
+    <script>
+        function onclick_extend_X(i1) {
+            disp = document.getElementById("list{0}".format(i1)).style.display;
+            console.log(disp);
+
+            if (disp == "none") {
+                document.getElementById("list{0}".format(i1)).style.display = "block";
+                document.getElementById("btn{0}".format(i1)).innerHTML = "-";
+            } else if (disp == "block") {
+                document.getElementById("list{0}".format(i1)).style.display = "none";
+                document.getElementById("btn{0}".format(i1)).innerHTML = "+";
+            }
+        }
+    </script>
+</body>
+
+</html>
